@@ -1,0 +1,9 @@
+[submodule "vendor/http-parser"]
+	path = vendor/http-parser
+	url = https://github.com/getstackd/http-parser.git
+[submodule "vendor/libuv"]
+	path = vendor/libuv
+	url = https://github.com/getstackd/libuv.git
+[submodule "vendor/googletest"]
+	path = vendor/googletest
+	url = https://git.chromium.org/git/external/googletest.git
