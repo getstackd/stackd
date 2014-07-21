@@ -1,0 +1,7 @@
+# boost-context
+/vendor/boost-context/stage/
+/vendor/boost-context/project-config.jam*
+/vendor/boost-context/bootstrap.log
+/vendor/boost-context/bjam
+/vendor/boost-context/bin.v2/
+/vendor/boost-context/b2
