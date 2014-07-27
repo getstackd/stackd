@@ -107,3 +107,4 @@ if __name__ == '__main__':
 	if args.task == 'build': build(args)
 	if args.task == 'install': install(args)
 	if args.task == 'package': install(args)
+

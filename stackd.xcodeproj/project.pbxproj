@@ -7,11 +7,30 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5C8746E4197C779B0030EF1B /* libuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C8746E3197C779B0030EF1B /* libuv.a */; };
 		5C874736197C7ACF0030EF1B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8746E0197C778F0030EF1B /* main.cpp */; };
 		5C874738197C7B9F0030EF1B /* http_parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C8746EA197C77E60030EF1B /* http_parser.c */; };
 		5C87474F197D1AED0030EF1B /* libboost_context.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C87474E197D1AED0030EF1B /* libboost_context.a */; };
+		5C87476B197E3C8F0030EF1B /* libstackd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C874754197E2F980030EF1B /* libstackd.a */; };
+		5C874775197EF7980030EF1B /* core.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5C87476D197EF7980030EF1B /* core.cc */; };
+		5C874776197EF7980030EF1B /* core.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C87476E197EF7980030EF1B /* core.h */; };
+		5C874777197EF7980030EF1B /* error.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C87476F197EF7980030EF1B /* error.h */; };
+		5C874778197EF7980030EF1B /* net-server.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5C874770197EF7980030EF1B /* net-server.cc */; };
+		5C874779197EF7980030EF1B /* net-server.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C874771197EF7980030EF1B /* net-server.h */; };
+		5C87477A197EF7980030EF1B /* net.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5C874772197EF7980030EF1B /* net.cc */; };
+		5C87477B197EF7980030EF1B /* net.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C874773197EF7980030EF1B /* net.h */; };
+		5C87477C197EF7980030EF1B /* stackd.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C874774197EF7980030EF1B /* stackd.h */; };
+		5C87477E19845E250030EF1B /* libuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C8746E3197C779B0030EF1B /* libuv.a */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		5C874769197E3C510030EF1B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5C7F4F86197C3DBB00142D61 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5C874753197E2F980030EF1B;
+			remoteInfo = libstackd;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		5C7F4F8C197C3DBB00142D61 /* CopyFiles */ = {
@@ -28,7 +47,6 @@
 /* Begin PBXFileReference section */
 		5C7F4F8E197C3DBB00142D61 /* stackd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stackd; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C8746E0197C778F0030EF1B /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = "<group>"; };
-		5C8746E1197C778F0030EF1B /* stackd.1 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.man; name = stackd.1; path = src/stackd.1; sourceTree = "<group>"; };
 		5C8746E3197C779B0030EF1B /* libuv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv.a; path = lib/libuv.a; sourceTree = "<group>"; };
 		5C8746E8197C77E60030EF1B /* parsertrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = parsertrace.c; sourceTree = "<group>"; };
 		5C8746E9197C77E60030EF1B /* url_parser.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = url_parser.c; sourceTree = "<group>"; };
@@ -50,6 +68,16 @@
 		5C874749197C7F530030EF1B /* uv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = uv.h; sourceTree = "<group>"; };
 		5C87474D197D05B00030EF1B /* build.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = build.py; sourceTree = "<group>"; };
 		5C87474E197D1AED0030EF1B /* libboost_context.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_context.a; path = lib/libboost_context.a; sourceTree = "<group>"; };
+		5C874754197E2F980030EF1B /* libstackd.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libstackd.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C87476D197EF7980030EF1B /* core.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = core.cc; path = src/stackd/core.cc; sourceTree = "<group>"; };
+		5C87476E197EF7980030EF1B /* core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = core.h; path = src/stackd/core.h; sourceTree = "<group>"; };
+		5C87476F197EF7980030EF1B /* error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = error.h; path = src/stackd/error.h; sourceTree = "<group>"; };
+		5C874770197EF7980030EF1B /* net-server.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "net-server.cc"; path = "src/stackd/net-server.cc"; sourceTree = "<group>"; };
+		5C874771197EF7980030EF1B /* net-server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "net-server.h"; path = "src/stackd/net-server.h"; sourceTree = "<group>"; };
+		5C874772197EF7980030EF1B /* net.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = net.cc; path = src/stackd/net.cc; sourceTree = "<group>"; };
+		5C874773197EF7980030EF1B /* net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = net.h; path = src/stackd/net.h; sourceTree = "<group>"; };
+		5C874774197EF7980030EF1B /* stackd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stackd.h; path = src/stackd/stackd.h; sourceTree = "<group>"; };
+		5C87477D197F7E090030EF1B /* delegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = delegate.h; path = src/stackd/delegate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,8 +85,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5C8746E4197C779B0030EF1B /* libuv.a in Frameworks */,
+				5C87476B197E3C8F0030EF1B /* libstackd.a in Frameworks */,
+				5C87477E19845E250030EF1B /* libuv.a in Frameworks */,
 				5C87474F197D1AED0030EF1B /* libboost_context.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5C874751197E2F980030EF1B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				5C7F4F8E197C3DBB00142D61 /* stackd */,
+				5C874754197E2F980030EF1B /* libstackd.a */,
 			);
 			name = bin;
 			sourceTree = "<group>";
@@ -97,8 +134,8 @@
 		5C8746DF197C776D0030EF1B /* src */ = {
 			isa = PBXGroup;
 			children = (
+				5C874758197E2FC80030EF1B /* stackd */,
 				5C8746E0197C778F0030EF1B /* main.cpp */,
-				5C8746E1197C778F0030EF1B /* stackd.1 */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -177,7 +214,38 @@
 			name = scripts;
 			sourceTree = "<group>";
 		};
+		5C874758197E2FC80030EF1B /* stackd */ = {
+			isa = PBXGroup;
+			children = (
+				5C87476D197EF7980030EF1B /* core.cc */,
+				5C87476E197EF7980030EF1B /* core.h */,
+				5C87476F197EF7980030EF1B /* error.h */,
+				5C874770197EF7980030EF1B /* net-server.cc */,
+				5C874771197EF7980030EF1B /* net-server.h */,
+				5C874772197EF7980030EF1B /* net.cc */,
+				5C874773197EF7980030EF1B /* net.h */,
+				5C874774197EF7980030EF1B /* stackd.h */,
+				5C87477D197F7E090030EF1B /* delegate.h */,
+			);
+			name = stackd;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		5C874752197E2F980030EF1B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C874776197EF7980030EF1B /* core.h in Headers */,
+				5C874779197EF7980030EF1B /* net-server.h in Headers */,
+				5C87477C197EF7980030EF1B /* stackd.h in Headers */,
+				5C87477B197EF7980030EF1B /* net.h in Headers */,
+				5C874777197EF7980030EF1B /* error.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		5C7F4F8D197C3DBB00142D61 /* stackd */ = {
@@ -193,11 +261,29 @@
 			buildRules = (
 			);
 			dependencies = (
+				5C87476A197E3C510030EF1B /* PBXTargetDependency */,
 			);
 			name = stackd;
 			productName = stackd;
 			productReference = 5C7F4F8E197C3DBB00142D61 /* stackd */;
 			productType = "com.apple.product-type.tool";
+		};
+		5C874753197E2F980030EF1B /* libstackd */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5C874755197E2F980030EF1B /* Build configuration list for PBXNativeTarget "libstackd" */;
+			buildPhases = (
+				5C874750197E2F980030EF1B /* Sources */,
+				5C874751197E2F980030EF1B /* Frameworks */,
+				5C874752197E2F980030EF1B /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libstackd;
+			productName = libstackd;
+			productReference = 5C874754197E2F980030EF1B /* libstackd.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
@@ -221,6 +307,7 @@
 			projectRoot = "";
 			targets = (
 				5C7F4F8D197C3DBB00142D61 /* stackd */,
+				5C874753197E2F980030EF1B /* libstackd */,
 			);
 		};
 /* End PBXProject section */
@@ -267,7 +354,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5C874750197E2F980030EF1B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C874778197EF7980030EF1B /* net-server.cc in Sources */,
+				5C87477A197EF7980030EF1B /* net.cc in Sources */,
+				5C874775197EF7980030EF1B /* core.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5C87476A197E3C510030EF1B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5C874753197E2F980030EF1B /* libstackd */;
+			targetProxy = 5C874769197E3C510030EF1B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		5C7F4F95197C3DBB00142D61 /* Debug */ = {
@@ -301,9 +406,16 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"./vendor/boost-context",
+				);
+				LIBRARY_SEARCH_PATHS = ./lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "./src ./vendor/boost-context ./vendor/http-parser ./vendor/libuv/include";
 			};
 			name = Debug;
 		};
@@ -333,8 +445,15 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"./vendor/boost-context",
+				);
+				LIBRARY_SEARCH_PATHS = ./lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "./src ./vendor/boost-context ./vendor/http-parser ./vendor/libuv/include";
 			};
 			name = Release;
 		};
@@ -360,6 +479,26 @@
 			};
 			name = Release;
 		};
+		5C874756197E2F980030EF1B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = stackd;
+			};
+			name = Debug;
+		};
+		5C874757197E2F980030EF1B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				PRODUCT_NAME = stackd;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -380,6 +519,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		5C874755197E2F980030EF1B /* Build configuration list for PBXNativeTarget "libstackd" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5C874756197E2F980030EF1B /* Debug */,
+				5C874757197E2F980030EF1B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
