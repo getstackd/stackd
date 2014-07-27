@@ -27,8 +27,9 @@ namespace /* tuple sequence helper */
 
 namespace stackd
 {
-   namespace internal {
-      struct unwind_coroutine {}; // TODO: Need to throw exception to unwind the stack
+   namespace /* internal */
+   {
+      struct unwind_coroutine {};
       
       class yeild_coroutine
       {
@@ -39,47 +40,24 @@ namespace stackd
          
          void operator()(bool terminate = false)
          {
-            boost::context::jump_fcontext(context_active, context_main, (intptr_t)terminate);
+            terminate ? throw unwind_coroutine() : boost::context::jump_fcontext(context_active, context_main, (intptr_t)terminate);
          }
          
       private:
          boost::context::fcontext_t *context_main;
          boost::context::fcontext_t *context_active;
       };
-      
-      // TODO: Resuming a context requires that the pointer maintains its type, otherwise the tuple shits on itself
-      /*
-      class resume_coroutine
-      {
-      public:
-         resume_coroutine() : coroutine_ptr(nullptr), context_main(nullptr), context_active(nullptr) {}
-         resume_coroutine(void* coroutine_ptr, boost::context::fcontext_t *context_main, boost::context::fcontext_t *context_active)
-         : coroutine_ptr(coroutine_ptr), context_main(context_main), context_active(context_active) {}
-         
-         bool operator()()
-         {
-            return (bool) boost::context::jump_fcontext(context_main, context_active, (intptr_t)coroutine_ptr);
-         }
-         
-      private:
-         void *coroutine_ptr;
-         boost::context::fcontext_t *context_main;
-         boost::context::fcontext_t *context_active;
-      };
-       */
    }
    
-   static internal::yeild_coroutine *coroutine_yielder = nullptr;
-   inline void yield(bool terminate = false) { if(coroutine_yielder) (*coroutine_yielder)(terminate); }
-   
-   // Resume may be reserved for internal use only
-   //static internal::resume_coroutine *coroutine_resumer = nullptr;
-   //inline void resume() { if (coroutine_resumer) (*coroutine_resumer)(); }
+   static yeild_coroutine *coroutine_yielder = nullptr;
+   inline void yield(bool terminate = false) { terminate ? throw unwind_coroutine() : (*coroutine_yielder)(); }
    
    
    template<typename... Args>
    class coroutine
    {
+      friend Core;
+      
    public:
       coroutine() : stack(nullptr), context(nullptr), context_main(nullptr) {}
       ~coroutine() { delete stack; delete context_main; }
@@ -88,8 +66,7 @@ namespace stackd
          stack = new std::array<intptr_t, 64*1024>();
          context = boost::context::make_fcontext(stack->data() + stack->size(), stack->size(), &coroutine::dispatch);
          context_main = new boost::context::fcontext_t();
-         yielder = internal::yeild_coroutine(context_main, context);
-         //resumer = internal::resume_coroutine((void*)this, context_main, context);
+         yielder = yeild_coroutine(context_main, context);
       }
       
       coroutine& operator=(coroutine&& other)
@@ -107,7 +84,6 @@ namespace stackd
          other.context_main = nullptr;
          
          yielder = std::move(other.yielder);
-         //resumer = std::move(other.resumer);
          
          return *this;
       }
@@ -122,17 +98,13 @@ namespace stackd
       inline bool call()
       {
          coroutine_yielder = &yielder;
-         //coroutine_resumer = nullptr;
-         //return resumer();
          return (bool) boost::context::jump_fcontext(context_main, context, (intptr_t)this);
       }
       
       inline void yield(bool terminate = false)
       {
          coroutine_yielder = nullptr;
-         //coroutine_resumer = &resumer;
-         yielder(terminate);
-         //boost::context::jump_fcontext(context, context_main, (intptr_t)terminate);
+         boost::context::jump_fcontext(context, context_main, (intptr_t)terminate);
       }
       
       template<int ...S>
@@ -144,10 +116,11 @@ namespace stackd
       static void dispatch(intptr_t coroutine_ptr)
       {
          coroutine *self = (coroutine*)coroutine_ptr;
-         coroutine_yielder = &self->yielder;
-         //coroutine_resumer = &self->resumer;
+         try {
+            coroutine_yielder = &self->yielder;
+            self->delegator(typename gens<sizeof...(Args)>::type());
+         } catch (unwind_coroutine const&) {}
          
-         self->delegator(typename gens<sizeof...(Args)>::type());
          self->yield(true);
       }
       
@@ -158,8 +131,7 @@ namespace stackd
       boost::context::fcontext_t *context_main;
       std::array<intptr_t, 64*1024> *stack;
       
-      internal::yeild_coroutine yielder;
-      //internal::resume_coroutine resumer;
+      yeild_coroutine yielder;
    };
    
    template <class T, typename... Args>
