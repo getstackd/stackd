@@ -10,9 +10,9 @@
 #ifndef STACKED_NET_H_
 #define STACKED_NET_H_
 
-#include "core.h"
-#include "net-server.h"
-#include "error.h"
+#include "stackd/core.h"
+#include "stackd/net-server.h"
+#include "stackd/error.h"
 
 #include <memory>
 

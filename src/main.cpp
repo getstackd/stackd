@@ -13,19 +13,7 @@
 #include "http_parser.h"
 #include "boost/context/all.hpp"
 
-#include "stackd.h"
-#include "delegate.h"
-
-boost::context::fcontext_t og, *coro;
-void test(intptr_t param)
-{
-   int i = 0;
-   
-   std::cout << "Do Work" << ++i << std::endl;
-   boost::context::jump_fcontext(coro, &og, 0);
-   std::cout << "Do Work" << ++i << std::endl;
-   boost::context::jump_fcontext(coro, &og, 0);
-}
+#include "stackd/stackd.h"
 
 class SocketServer : public stackd::NetServerInterface<SocketServer>
 {
@@ -53,13 +41,6 @@ private:
 
 int main(int argc, const char * argv[])
 {
-   //std::array<intptr_t, 64*1024> stack;
-   //coro = boost::context::make_fcontext(stack.data() + stack.size(), stack.size(), &test);
-   //boost::context::jump_fcontext(&og, coro, 0);
-   //std::cout << "Again..." << std::endl;
-   //boost::context::jump_fcontext(&og, coro, 0);
-   //boost::context::jump_fcontext(&og, coro, 0);
-   
    stackd::Core core;
    stackd::Net net;
    

@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Justin Walsh. All rights reserved.
 //
 
-#include "core.h"
+#include "stackd/core.h"
 
 namespace stackd
 {

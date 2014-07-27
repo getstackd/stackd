@@ -6,14 +6,15 @@
 //  Copyright (c) 2014 Justin Walsh. All rights reserved.
 //
 
+#pragma once
 #ifndef STACKD_SERVER_H_
 #define STACKD_SERVER_H_
 
 #include <iostream>
 #include <functional>
 
-#include "core.h"
-#include "delegate.h"
+#include "stackd/core.h"
+#include "stackd/delegate.h"
 
 namespace stackd
 {

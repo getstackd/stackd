@@ -6,13 +6,13 @@
 //  Copyright (c) 2014 Justin Walsh. All rights reserved.
 //
 
-#include "net.h"
+#include "stackd/net.h"
 
 #include <array>
 #include <tuple>
 
-#include "core.h"
-#include "error.h"
+#include "stackd/core.h"
+#include "stackd/error.h"
 
 namespace stackd
 {

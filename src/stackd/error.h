@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Justin Walsh. All rights reserved.
 //
 
+#pragma once
 #ifndef STACKD_ERROR_H_
 #define STACKD_ERROR_H_
 

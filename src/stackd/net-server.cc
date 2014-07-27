@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Justin Walsh. All rights reserved.
 //
 
-#include "net-server.h"
+#include "stackd/net-server.h"
 #include <iostream>
 
 namespace stackd

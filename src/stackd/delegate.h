@@ -15,6 +15,8 @@
 #include <tuple>
 #include <array>
 
+#include "stackd/core.h"
+
 
 namespace /* tuple sequence helper */
 {
