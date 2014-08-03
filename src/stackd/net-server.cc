@@ -20,13 +20,16 @@
 //  SOFTWARE.
 
 #include "stackd/net-server.h"
+
 #include <iostream>
+#include "uv.h"
 
 namespace stackd
 {
    NetServer::NetServer(Core *core) : core(core)
    {
-      
+      NetServer::uv_binding[(uv_handle_t*)&tcp_server] = this;
+      uv_tcp_init(core->loop(), &tcp_server);
    }
    
    NetServer::~NetServer()
@@ -37,16 +40,34 @@ namespace stackd
    
    void NetServer::listen(int port)
    {
-      listen(port, 0);
+      listen(port, 1234);
    }
    
    void NetServer::listen(int port, int address)
    {
-      onListening(port);
+      //struct sockaddr_in bind_addr;
+      //uv_ip4_addr("0.0.0.0", port, &bind_addr);
+      //uv_tcp_bind(&tcp_server, (sockaddr*)&bind_addr, 0);
+      //int error = uv_listen((uv_stream_t*)&tcp_server, 128, NetServer::on_connection);
+      
+      core->execute<int>(&onListening, port);
    }
    
    void NetServer::close()
    {
+      uv_close((uv_handle_t*)&tcp_server, NetServer::on_close);
       onClose("success");
+   }
+   
+   std::unordered_map<uv_handle_t*, NetServer*> NetServer::uv_binding;
+   void NetServer::on_connection(uv_stream_t *server, int status)
+   {
+      NetServer *net_server = uv_binding[(uv_handle_t*)server];
+      //net_server->onNewConnection(server, status);
+   }
+   
+   void NetServer::on_close(uv_handle_t *server)
+   {
+      NetServer *net_server = uv_binding[(uv_handle_t*)server];
    }
 }

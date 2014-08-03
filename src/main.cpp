@@ -37,20 +37,24 @@ public:
    }
 
 private:
-   void listening(int x) { std::cout << "SocketServer listening on " << x << std::endl; }
+   void listening(int port)
+   {
+      std::cout << "SocketServer listening on " << port << std::endl;
+      stackd::yield();
+      
+      std::cout << "SocketServer listening on " << port << std::endl;
+      stackd::yield();
+      
+      std::cout << "SocketServer listening on " << port << std::endl;
+      stackd::yield(true);
+      
+      std::cout << "SocketServer listening on " << port << std::endl;
+   }
    void connecting(float x) { std::cout << "SocketServer connecting" << std::endl; }
    void close(const char * msg) { std::cout << "SocketServer close = " << msg << std::endl; }
    void error(const char * msg) { std::cout << "SocketServer error = " << msg << std::endl; }
 };
 
-class StandardNetServer : public stackd::NetServerListener
-{
-private:
-   void listening(int x) { std::cout << "NetServer listening" << std::endl; }
-   void connection(float x) { std::cout << "NetServer connecting"<< std::endl; }
-   void close(const char *) { std::cout << "NetServer close"<< std::endl; }
-   void error(const char *) { std::cout << "NetServer error"<< std::endl; }
-};
 
 int main(int argc, const char * argv[])
 {
@@ -61,10 +65,6 @@ int main(int argc, const char * argv[])
    auto server = net.createServer<SocketServer>(&serverDelegate);
    server->listen(1234);
    
-   StandardNetServer netServer;
-   server = net.createServer(&netServer);
-   server->listen(8080);
-   
-   return 0;
+   return core.run();
 }
 

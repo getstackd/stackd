@@ -25,7 +25,9 @@
 
 #include <iostream>
 #include <functional>
+#include <unordered_map>
 
+#include "uv.h"
 #include "stackd/core.h"
 #include "stackd/delegate.h"
 
@@ -90,8 +92,16 @@ namespace stackd
          onError = coroutine<const char *>(delegates.error.bind(delegate));
       };
       
+   protected:
+      static std::unordered_map<uv_handle_t*, NetServer*> uv_binding;
+      static void on_connection(uv_stream_t *server, int status);
+      static void on_close(uv_handle_t *server);
+      
+      
    private:
       Core *core;
+      uv_tcp_t tcp_server;
+      
       coroutine<int> onListening;
       coroutine<float> onConnecting;
       coroutine<const char *> onClose;

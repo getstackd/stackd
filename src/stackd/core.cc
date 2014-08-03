@@ -28,20 +28,19 @@ namespace stackd
    {
       return Core::default_core;
    }
-   
-   void yeild(bool terminate)
-   {
-      if (Core::active == 0) return;
-   }
-   
+      
    Core::Core()
    {
       if (Core::default_core == 0) Core::default_core = this;
+      
+      uv_loop = new uv_loop_t;
+      uv_loop_init(uv_loop);
    }
    
    Core::~Core()
    {
-      
+      uv_loop_close(uv_loop);
+      delete uv_loop;
    }
    
    void Core::activate()
@@ -52,6 +51,29 @@ namespace stackd
    void Core::deactivate()
    {
       Core::active = 0;
+   }
+   
+   uv_loop_t* Core::loop()
+   {
+      return uv_loop;
+   }
+   
+   int Core::run()
+   {
+      return uv_run(uv_loop, UV_RUN_DEFAULT);
+   }
+   
+   uint32_t Core::uv_timers_index = 0;
+   std::array<uv_timer_t, 2048> Core::uv_timers;
+   std::unordered_map<uv_timer_t*, coroutine_context*> Core::uv_binding;
+   void Core::on_continuation(uv_timer_t *timer)
+   {
+      coroutine_context* context = uv_binding[timer];
+      bool terminated = context->resume();
+      if (terminated) {
+         uv_binding.erase(timer);
+         uv_timer_stop(timer);
+      }
    }
    
    Core* Core::active = 0;

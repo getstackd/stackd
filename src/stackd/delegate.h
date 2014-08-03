@@ -28,9 +28,6 @@
 #include <tuple>
 #include <array>
 
-#include "stackd/core.h"
-
-
 namespace /* tuple sequence helper */
 {
    template<int ...> struct seq {};
@@ -40,86 +37,77 @@ namespace /* tuple sequence helper */
 
 namespace stackd
 {
-   namespace /* internal */
+   // A movable context for mainting the state of each coroutine
+   class coroutine_context
    {
-      struct unwind_coroutine {};
-      
-      class yeild_coroutine
-      {
-      public:
-         yeild_coroutine() : context_main(nullptr), context_active(nullptr) {}
-         yeild_coroutine(boost::context::fcontext_t *context_main, boost::context::fcontext_t *context_active)
-            : context_main(context_main), context_active(context_active) {}
-         
-         void operator()(bool terminate = false)
-         {
-            terminate ? throw unwind_coroutine() : boost::context::jump_fcontext(context_active, context_main, (intptr_t)terminate);
-         }
-         
-      private:
-         boost::context::fcontext_t *context_main;
-         boost::context::fcontext_t *context_active;
-      };
-   }
-   
-   static yeild_coroutine *coroutine_yielder = nullptr;
-   inline void yield(bool terminate = false) { terminate ? throw unwind_coroutine() : (*coroutine_yielder)(); }
-   
-   
-   template<typename... Args>
-   class coroutine
-   {
-      friend Core;
+      template<typename... Args> friend class coroutine;
       
    public:
-      coroutine() : stack(nullptr), context(nullptr), context_main(nullptr) {}
-      ~coroutine() { delete stack; delete context_main; }
+      coroutine_context() : coroutine_ptr(0), stack(nullptr), context(nullptr) {}
+      ~coroutine_context() { delete stack; }
+      coroutine_context(void* cptr, void (*handler)(intptr_t));
+      coroutine_context(coroutine_context&& other);
+      coroutine_context& operator=(coroutine_context&& other);
+      
+      coroutine_context(coroutine_context const&) = delete;
+      coroutine_context& operator=(coroutine_context const&) = delete;
+      
+      bool resume();
+      void yield(bool terminate = false);
+      
+   private:
+      void* coroutine_ptr;
+      std::array<intptr_t, 8 * 1024 * 1024> *stack;
+      boost::context::fcontext_t *context;
+      boost::context::fcontext_t context_main;
+   };
+   
+   // API for maintaining coroutine state
+   extern void yield(bool terminate = false);
+   namespace internal
+   {
+      struct unwind_coroutine {};
+      extern coroutine_context* active_context;
+   }
+   
+   // Coroutine with parameters and a delegate, wrapper for the delegate function to turn into a coroutine
+   template<typename... Args>
+   class coroutine
+   {      
+   public:
+      coroutine() = default;
       coroutine(std::function<void(Args...)> delegate) : delegate(delegate)
       {
-         stack = new std::array<intptr_t, 64*1024>();
-         context = boost::context::make_fcontext(stack->data() + stack->size(), stack->size(), &coroutine::dispatch);
-         context_main = new boost::context::fcontext_t();
-         yielder = yeild_coroutine(context_main, context);
+         context = coroutine_context(this, &coroutine::dispatch);
+      }
+      
+      coroutine(coroutine&& other)
+      {
+         delegate = std::move(other.delegate);
+         parameters = std::move(other.parameters);
+         context = std::move(other.context);
+         context.coroutine_ptr = this;
       }
       
       coroutine& operator=(coroutine&& other)
       {
-         delegate = std::move(other.delegate);
-         parameters = std::move(other.parameters);
-         
-         stack = other.stack;
-         other.stack = nullptr;
-         
-         context = other.context;
-         other.context = nullptr;
-         
-         context_main = other.context_main;
-         other.context_main = nullptr;
-         
-         yielder = std::move(other.yielder);
-         
+         if (this != &other)
+         {
+            delegate = std::move(other.delegate);
+            parameters = std::move(other.parameters);
+            context = std::move(other.context);
+            context.coroutine_ptr = this;
+         }
          return *this;
       }
       
-      bool operator()(Args... args)
+      coroutine_context* operator()(Args... args)
       {
          parameters = std::make_tuple(args...);
-         return call();
+         return &context;
       }
       
    private:
-      inline bool call()
-      {
-         coroutine_yielder = &yielder;
-         return (bool) boost::context::jump_fcontext(context_main, context, (intptr_t)this);
-      }
-      
-      inline void yield(bool terminate = false)
-      {
-         coroutine_yielder = nullptr;
-         boost::context::jump_fcontext(context, context_main, (intptr_t)terminate);
-      }
-      
       template<int ...S>
       void delegator(seq<S...>)
       {
@@ -128,25 +116,20 @@ namespace stackd
       
       static void dispatch(intptr_t coroutine_ptr)
       {
-         coroutine *self = (coroutine*)coroutine_ptr;
+         auto self = (coroutine<Args...>*)coroutine_ptr;
          try {
-            coroutine_yielder = &self->yielder;
             self->delegator(typename gens<sizeof...(Args)>::type());
-         } catch (unwind_coroutine const&) {}
+         } catch (internal::unwind_coroutine const&) {}
          
-         self->yield(true);
+         self->context.yield(true);
       }
       
       std::function<void(Args...)> delegate;
       std::tuple<Args...> parameters;
-      
-      boost::context::fcontext_t *context;
-      boost::context::fcontext_t *context_main;
-      std::array<intptr_t, 64*1024> *stack;
-      
-      yeild_coroutine yielder;
+      coroutine_context context;
    };
    
+   // Late binding delegate to a member function
    template <class T, typename... Args>
    class delegate
    {
