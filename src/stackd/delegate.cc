@@ -35,8 +35,10 @@ namespace stackd
    
    coroutine_context::coroutine_context(void* cptr, void (*handler)(intptr_t))
    {
-      coroutine_ptr = cptr;
-      stack = new std::array<intptr_t, 8 * 1024 * 1024>();
+      terminated = false;
+      start.coroutine = cptr;
+      start.context = this;
+      stack = new std::array<intptr_t, 64 * 1024>();
       context = boost::context::make_fcontext(stack->data() + stack->size(), stack->size(), handler);
    }
    
@@ -52,7 +54,10 @@ namespace stackd
       
       context_main = std::move(context_main);
       
-      coroutine_ptr = other.coroutine_ptr;
+      start.coroutine = other.start.coroutine;
+      start.context = this;
+      
+      terminated = other.terminated;
    }
    
    coroutine_context& coroutine_context::operator=(coroutine_context&& other)
@@ -69,19 +74,32 @@ namespace stackd
          
          context_main = std::move(context_main);
          
-         coroutine_ptr = other.coroutine_ptr;
+         start.coroutine = other.start.coroutine;
+         start.context = this;
+         
+         terminated = other.terminated;
       }
       return *this;
    }
    
+   bool coroutine_context::active()
+   {
+      return !terminated;
+   }
+   
    bool coroutine_context::resume()
    {
+      if (terminated) return terminated;
+      
       internal::active_context = this;
-      return (bool) boost::context::jump_fcontext(&context_main, context, (intptr_t)coroutine_ptr);
+      terminated = (bool)boost::context::jump_fcontext(&context_main, context, (intptr_t)&start);
+      return terminated;
    }
    
    void coroutine_context::yield(bool terminate)
    {
+      if (terminated) return;
+      
       internal::active_context = nullptr;
       boost::context::jump_fcontext(context, &context_main, (intptr_t)terminate);
    }

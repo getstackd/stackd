@@ -47,9 +47,8 @@ namespace stackd
       template<typename... Args>
       void execute(coroutine<Args...>* continuation, Args... args)
       {
-         coroutine_context* context = (*continuation)(args...);
-         bool terminated = context->resume();
-         if (!terminated) {
+         auto context = (*continuation)(args...);
+         if (context->active()) {
             uv_timer_t *timer = &uv_timers[uv_timers_index++];
             uv_timer_init(uv_loop, timer);
             uv_timer_start(timer, on_continuation, 0, 1);
@@ -63,7 +62,7 @@ namespace stackd
    protected:
       static uint32_t uv_timers_index;
       static std::array<uv_timer_t, 2048> uv_timers;
-      static std::unordered_map<uv_timer_t*, coroutine_context*> uv_binding;
+      static std::unordered_map<uv_timer_t*, std::shared_ptr<coroutine_context>> uv_binding;
       static void on_continuation(uv_timer_t *timer);
       
    private:

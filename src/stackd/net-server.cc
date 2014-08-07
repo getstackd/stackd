@@ -56,7 +56,7 @@ namespace stackd
    void NetServer::close()
    {
       uv_close((uv_handle_t*)&tcp_server, NetServer::on_close);
-      onClose("success");
+      core->execute<const char*>(&onClose, "success");
    }
    
    std::unordered_map<uv_handle_t*, NetServer*> NetServer::uv_binding;

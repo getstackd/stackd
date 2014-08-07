@@ -27,6 +27,7 @@
 #include <functional>
 #include <tuple>
 #include <array>
+#include <memory>
 
 namespace /* tuple sequence helper */
 {
@@ -43,7 +44,7 @@ namespace stackd
       template<typename... Args> friend class coroutine;
       
    public:
-      coroutine_context() : coroutine_ptr(0), stack(nullptr), context(nullptr) {}
+      coroutine_context() : terminated(true), stack(nullptr), context(nullptr) {}
       ~coroutine_context() { delete stack; }
       coroutine_context(void* cptr, void (*handler)(intptr_t));
       coroutine_context(coroutine_context&& other);
@@ -52,12 +53,21 @@ namespace stackd
       coroutine_context(coroutine_context const&) = delete;
       coroutine_context& operator=(coroutine_context const&) = delete;
       
+      bool active();
       bool resume();
       void yield(bool terminate = false);
       
+   protected:
+      struct coroutine_start
+      {
+         coroutine_start() : coroutine(0), context(nullptr) {};
+         void* coroutine;
+         coroutine_context* context;
+      } start;
+      
    private:
-      void* coroutine_ptr;
-      std::array<intptr_t, 8 * 1024 * 1024> *stack;
+      bool terminated;
+      std::array<intptr_t, 64 * 1024> *stack;
       boost::context::fcontext_t *context;
       boost::context::fcontext_t context_main;
    };
@@ -76,17 +86,12 @@ namespace stackd
    {      
    public:
       coroutine() = default;
-      coroutine(std::function<void(Args...)> delegate) : delegate(delegate)
-      {
-         context = coroutine_context(this, &coroutine::dispatch);
-      }
+      coroutine(std::function<void(Args...)> delegate) : delegate(delegate) {};
       
       coroutine(coroutine&& other)
       {
          delegate = std::move(other.delegate);
          parameters = std::move(other.parameters);
-         context = std::move(other.context);
-         context.coroutine_ptr = this;
       }
       
       coroutine& operator=(coroutine&& other)
@@ -95,16 +100,16 @@ namespace stackd
          {
             delegate = std::move(other.delegate);
             parameters = std::move(other.parameters);
-            context = std::move(other.context);
-            context.coroutine_ptr = this;
          }
          return *this;
       }
       
-      coroutine_context* operator()(Args... args)
+      std::shared_ptr<coroutine_context> operator()(Args... args)
       {
          parameters = std::make_tuple(args...);
-         return &context;
+         coroutine_context* context = new coroutine_context(this, &coroutine::dispatch);
+         context->resume();
+         return std::shared_ptr<coroutine_context>(context);
       }
       
    private:
@@ -114,19 +119,19 @@ namespace stackd
          delegate(std::get<S>(parameters)...);
       }
       
-      static void dispatch(intptr_t coroutine_ptr)
+      static void dispatch(intptr_t start)
       {
-         auto self = (coroutine<Args...>*)coroutine_ptr;
+         auto self = (coroutine<Args...>*)((coroutine_context::coroutine_start*)(start))->coroutine;
+         auto context = ((coroutine_context::coroutine_start*)(start))->context;
          try {
             self->delegator(typename gens<sizeof...(Args)>::type());
          } catch (internal::unwind_coroutine const&) {}
          
-         self->context.yield(true);
+         context->yield(true);
       }
       
       std::function<void(Args...)> delegate;
       std::tuple<Args...> parameters;
-      coroutine_context context;
    };
    
    // Late binding delegate to a member function
