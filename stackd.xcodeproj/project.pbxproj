@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5C2E1B811988E9B6005A422D /* delegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5C2E1B801988E9B6005A422D /* delegate.cc */; };
+		5C2E1B811988E9B6005A422D /* coroutine.cc in Sources */ = {isa = PBXBuildFile; fileRef = 5C2E1B801988E9B6005A422D /* coroutine.cc */; };
 		5C874736197C7ACF0030EF1B /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8746E0197C778F0030EF1B /* main.cpp */; };
 		5C874738197C7B9F0030EF1B /* http_parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C8746EA197C77E60030EF1B /* http_parser.c */; };
 		5C87474F197D1AED0030EF1B /* libboost_context.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C87474E197D1AED0030EF1B /* libboost_context.a */; };
@@ -46,7 +46,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		5C2E1B801988E9B6005A422D /* delegate.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = delegate.cc; path = src/stackd/delegate.cc; sourceTree = "<group>"; };
+		5C2E1B801988E9B6005A422D /* coroutine.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = coroutine.cc; path = src/stackd/coroutine.cc; sourceTree = "<group>"; };
 		5C7F4F8E197C3DBB00142D61 /* stackd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stackd; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C8746E0197C778F0030EF1B /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = "<group>"; };
 		5C8746E3197C779B0030EF1B /* libuv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv.a; path = lib/libuv.a; sourceTree = "<group>"; };
@@ -79,7 +79,7 @@
 		5C874772197EF7980030EF1B /* net.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = net.cc; path = src/stackd/net.cc; sourceTree = "<group>"; };
 		5C874773197EF7980030EF1B /* net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = net.h; path = src/stackd/net.h; sourceTree = "<group>"; };
 		5C874774197EF7980030EF1B /* stackd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stackd.h; path = src/stackd/stackd.h; sourceTree = "<group>"; };
-		5C87477D197F7E090030EF1B /* delegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = delegate.h; path = src/stackd/delegate.h; sourceTree = "<group>"; };
+		5C87477D197F7E090030EF1B /* coroutine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = coroutine.h; path = src/stackd/coroutine.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -227,8 +227,8 @@
 				5C874772197EF7980030EF1B /* net.cc */,
 				5C874773197EF7980030EF1B /* net.h */,
 				5C874774197EF7980030EF1B /* stackd.h */,
-				5C2E1B801988E9B6005A422D /* delegate.cc */,
-				5C87477D197F7E090030EF1B /* delegate.h */,
+				5C2E1B801988E9B6005A422D /* coroutine.cc */,
+				5C87477D197F7E090030EF1B /* coroutine.h */,
 			);
 			name = stackd;
 			sourceTree = "<group>";
@@ -363,7 +363,7 @@
 			files = (
 				5C874778197EF7980030EF1B /* net-server.cc in Sources */,
 				5C87477A197EF7980030EF1B /* net.cc in Sources */,
-				5C2E1B811988E9B6005A422D /* delegate.cc in Sources */,
+				5C2E1B811988E9B6005A422D /* coroutine.cc in Sources */,
 				5C874775197EF7980030EF1B /* core.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

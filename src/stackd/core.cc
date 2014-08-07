@@ -65,7 +65,7 @@ namespace stackd
    
    uint32_t Core::uv_timers_index = 0;
    std::array<uv_timer_t, 2048> Core::uv_timers;
-   std::unordered_map<uv_timer_t*, std::shared_ptr<coroutine_context>> Core::uv_binding;
+   std::unordered_map<uv_timer_t*, std::shared_ptr<coroutine>> Core::uv_binding;
    void Core::on_continuation(uv_timer_t *timer)
    {
       auto context = uv_binding[timer];

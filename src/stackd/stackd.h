@@ -27,6 +27,6 @@
 #include "stackd/error.h"
 #include "stackd/net.h"
 #include "stackd/net-server.h"
-#include "stackd/delegate.h"
+#include "stackd/coroutine.h"
 
 #endif

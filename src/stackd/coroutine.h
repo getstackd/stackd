@@ -20,8 +20,8 @@
 //  SOFTWARE.
 
 #pragma once
-#ifndef STACKD_DELEGATE_H_
-#define STACKD_DELEGATE_H_
+#ifndef STACKD_COROUTINE_H_
+#define STACKD_COROUTINE_H_
 
 #include <boost/context/all.hpp>
 #include <functional>
@@ -39,19 +39,19 @@ namespace /* tuple sequence helper */
 namespace stackd
 {
    // A movable context for mainting the state of each coroutine
-   class coroutine_context
+   class coroutine
    {
-      template<typename... Args> friend class coroutine;
+      template<typename... Args> friend class coroutine_delegate;
       
    public:
-      coroutine_context() : terminated(true), stack(nullptr), context(nullptr) {}
-      ~coroutine_context() { delete stack; }
-      coroutine_context(void* cptr, void (*handler)(intptr_t));
-      coroutine_context(coroutine_context&& other);
-      coroutine_context& operator=(coroutine_context&& other);
+      coroutine() : terminated(true), stack(nullptr), context(nullptr) {}
+      ~coroutine() { delete stack; }
+      coroutine(void* cptr, void (*handler)(intptr_t));
+      coroutine(coroutine&& other);
+      coroutine& operator=(coroutine&& other);
       
-      coroutine_context(coroutine_context const&) = delete;
-      coroutine_context& operator=(coroutine_context const&) = delete;
+      coroutine(coroutine const&) = delete;
+      coroutine& operator=(coroutine const&) = delete;
       
       bool active();
       bool resume();
@@ -60,9 +60,9 @@ namespace stackd
    protected:
       struct coroutine_start
       {
-         coroutine_start() : coroutine(0), context(nullptr) {};
-         void* coroutine;
-         coroutine_context* context;
+         coroutine_start() : coroutine_delegate(0), context(nullptr) {};
+         void* coroutine_delegate;
+         coroutine* context;
       } start;
       
    private:
@@ -77,24 +77,24 @@ namespace stackd
    namespace internal
    {
       struct unwind_coroutine {};
-      extern coroutine_context* active_context;
+      extern coroutine* active_context;
    }
    
    // Coroutine with parameters and a delegate, wrapper for the delegate function to turn into a coroutine
    template<typename... Args>
-   class coroutine
+   class coroutine_delegate
    {      
    public:
-      coroutine() = default;
-      coroutine(std::function<void(Args...)> delegate) : delegate(delegate) {};
+      coroutine_delegate() = default;
+      coroutine_delegate(std::function<void(Args...)> delegate) : delegate(delegate) {};
       
-      coroutine(coroutine&& other)
+      coroutine_delegate(coroutine_delegate&& other)
       {
          delegate = std::move(other.delegate);
          parameters = std::move(other.parameters);
       }
       
-      coroutine& operator=(coroutine&& other)
+      coroutine_delegate& operator=(coroutine_delegate&& other)
       {
          if (this != &other)
          {
@@ -104,12 +104,12 @@ namespace stackd
          return *this;
       }
       
-      std::shared_ptr<coroutine_context> operator()(Args... args)
+      std::shared_ptr<coroutine> operator()(Args... args)
       {
          parameters = std::make_tuple(args...);
-         coroutine_context* context = new coroutine_context(this, &coroutine::dispatch);
+         coroutine* context = new coroutine(this, &coroutine_delegate::dispatch);
          context->resume();
-         return std::shared_ptr<coroutine_context>(context);
+         return std::shared_ptr<coroutine>(context);
       }
       
    private:
@@ -121,8 +121,8 @@ namespace stackd
       
       static void dispatch(intptr_t start)
       {
-         auto self = (coroutine<Args...>*)((coroutine_context::coroutine_start*)(start))->coroutine;
-         auto context = ((coroutine_context::coroutine_start*)(start))->context;
+         auto self = (coroutine_delegate<Args...>*)((coroutine::coroutine_start*)(start))->coroutine_delegate;
+         auto context = ((coroutine::coroutine_start*)(start))->context;
          try {
             self->delegator(typename gens<sizeof...(Args)>::type());
          } catch (internal::unwind_coroutine const&) {}

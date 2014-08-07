@@ -19,12 +19,12 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
-#include "stackd/delegate.h"
+#include "stackd/coroutine.h"
 #include <boost/context/all.hpp>
 
 namespace stackd
 {
-   coroutine_context* internal::active_context = nullptr;
+   coroutine* internal::active_context = nullptr;
    void yield(bool terminate)
    {
       if (internal::active_context == nullptr) return;
@@ -33,16 +33,16 @@ namespace stackd
       internal::active_context->yield(terminate);
    }
    
-   coroutine_context::coroutine_context(void* cptr, void (*handler)(intptr_t))
+   coroutine::coroutine(void* cptr, void (*handler)(intptr_t))
    {
       terminated = false;
-      start.coroutine = cptr;
+      start.coroutine_delegate = cptr;
       start.context = this;
       stack = new std::array<intptr_t, 64 * 1024>();
       context = boost::context::make_fcontext(stack->data() + stack->size(), stack->size(), handler);
    }
    
-   coroutine_context::coroutine_context(coroutine_context&& other)
+   coroutine::coroutine(coroutine&& other)
    {
       delete stack;
       stack = other.stack;
@@ -54,13 +54,13 @@ namespace stackd
       
       context_main = std::move(context_main);
       
-      start.coroutine = other.start.coroutine;
+      start.coroutine_delegate = other.start.coroutine_delegate;
       start.context = this;
       
       terminated = other.terminated;
    }
    
-   coroutine_context& coroutine_context::operator=(coroutine_context&& other)
+   coroutine& coroutine::operator=(coroutine&& other)
    {
       if (this != &other)
       {
@@ -74,7 +74,7 @@ namespace stackd
          
          context_main = std::move(context_main);
          
-         start.coroutine = other.start.coroutine;
+         start.coroutine_delegate = other.start.coroutine_delegate;
          start.context = this;
          
          terminated = other.terminated;
@@ -82,12 +82,12 @@ namespace stackd
       return *this;
    }
    
-   bool coroutine_context::active()
+   bool coroutine::active()
    {
       return !terminated;
    }
    
-   bool coroutine_context::resume()
+   bool coroutine::resume()
    {
       if (terminated) return terminated;
       
@@ -96,7 +96,7 @@ namespace stackd
       return terminated;
    }
    
-   void coroutine_context::yield(bool terminate)
+   void coroutine::yield(bool terminate)
    {
       if (terminated) return;
       

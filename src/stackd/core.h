@@ -26,7 +26,7 @@
 #include <list>
 #include <unordered_map>
 #include "uv.h"
-#include "stackd/delegate.h"
+#include "stackd/coroutine.h"
 
 namespace stackd
 {
@@ -45,7 +45,7 @@ namespace stackd
       void deactivate();   // Release the stack snapshot
       
       template<typename... Args>
-      void execute(coroutine<Args...>* continuation, Args... args)
+      void execute(coroutine_delegate<Args...>* continuation, Args... args)
       {
          auto context = (*continuation)(args...);
          if (context->active()) {
@@ -62,7 +62,7 @@ namespace stackd
    protected:
       static uint32_t uv_timers_index;
       static std::array<uv_timer_t, 2048> uv_timers;
-      static std::unordered_map<uv_timer_t*, std::shared_ptr<coroutine_context>> uv_binding;
+      static std::unordered_map<uv_timer_t*, std::shared_ptr<coroutine>> uv_binding;
       static void on_continuation(uv_timer_t *timer);
       
    private:

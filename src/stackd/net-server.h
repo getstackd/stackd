@@ -29,7 +29,7 @@
 
 #include "uv.h"
 #include "stackd/core.h"
-#include "stackd/delegate.h"
+#include "stackd/coroutine.h"
 
 namespace stackd
 {
@@ -86,10 +86,10 @@ namespace stackd
       template <class T>
       void bind(T* delegate, NetServerDelegate<T> delegates)
       {
-         onListening = coroutine<int>(delegates.listening.bind(delegate));
-         onConnecting = coroutine<float>(delegates.connection.bind(delegate));
-         onClose = coroutine<const char *>(delegates.close.bind(delegate));
-         onError = coroutine<const char *>(delegates.error.bind(delegate));
+         onListening = coroutine_delegate<int>(delegates.listening.bind(delegate));
+         onConnecting = coroutine_delegate<float>(delegates.connection.bind(delegate));
+         onClose = coroutine_delegate<const char *>(delegates.close.bind(delegate));
+         onError = coroutine_delegate<const char *>(delegates.error.bind(delegate));
       };
       
    protected:
@@ -102,10 +102,10 @@ namespace stackd
       Core *core;
       uv_tcp_t tcp_server;
       
-      coroutine<int> onListening;
-      coroutine<float> onConnecting;
-      coroutine<const char *> onClose;
-      coroutine<const char *> onError;
+      coroutine_delegate<int> onListening;
+      coroutine_delegate<float> onConnecting;
+      coroutine_delegate<const char *> onClose;
+      coroutine_delegate<const char *> onError;
    };
 }
 
